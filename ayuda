@@ -1,0 +1,46 @@
+import math
+
+# Función para calcular distancia entre dos puntos (simplificado)
+def calcular_distancia(p1, p2):
+    return math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
+
+# Shoppers: ID, ubicación (lat, lon), puntuación (0-5)
+shoppers = [
+    {"id": 1, "ubicacion": (10, 10), "puntuacion": 4.8},
+    {"id": 2, "ubicacion": (12, 9), "puntuacion": 4.5},
+]
+
+# Pedidos: ID, supermercado, destino, artículos, propina
+pedidos = [
+    {"id": 101, "supermercado": (11, 10), "destino": (14, 14), "articulos": 12, "propina": 8},
+    {"id": 102, "supermercado": (9, 9), "destino": (13, 13), "articulos": 6, "propina": 5},
+]
+
+# Algoritmo para asignar pedidos
+asignaciones = []
+
+for pedido in pedidos:
+    mejor_puntaje = -1
+    mejor_shopper = None
+
+    for shopper in shoppers:
+        dist = calcular_distancia(shopper["ubicacion"], pedido["supermercado"])
+        puntaje = (
+            100 - dist * 5 +                  # Penaliza distancia
+            pedido["propina"] * 10 +          # Favorece mayor propina
+            shopper["puntuacion"] * 20 -      # Mejores shoppers
+            pedido["articulos"] * 2           # Penaliza pedidos grandes
+        )
+
+        if puntaje > mejor_puntaje:
+            mejor_puntaje = puntaje
+            mejor_shopper = shopper["id"]
+
+    asignaciones.append({
+        "pedido_id": pedido["id"],
+        "asignado_a": mejor_shopper
+    })
+
+# Mostrar asignaciones
+for a in asignaciones:
+    print(f"Pedido {a['pedido_id']} asignado al Shopper {a['asignado_a']}")
